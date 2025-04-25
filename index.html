@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +41,7 @@
             background: #fff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             display: inline-block;
             text-align: left;
             max-width: 500px;
@@ -65,6 +66,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>🎉 Lucky Game 🎲</h1>
 
@@ -78,174 +80,177 @@
     <div class="info">
         <p><strong>Lottery ID:</strong> <span id="lotteryId">Loading...</span></p>
         <p><strong>Prize Pool:</strong> <span id="prizePool">Loading...</span> ETH</p>
-        <p><strong>Last Winner:</strong> <span id="lastWinner">Not picked yet</span></p>
+        <p><strong>Last Winners:</strong></p>
+        <ul id="lastWinnersList">
+            <li>Not picked yet</li>
+        </ul>
         <p><strong>Players:</strong></p>
         <ul id="playersList"></ul>
     </div>
 
     <script>
-        const contractAddress = "0xbCD67DbDc48Be18593639369f7957526C2371598"; // Your contract address
+        const contractAddress = "0x6660d029C0B257144678871ebF4BE27f60A6E3Ad"; // Your contract address
         const abi = [
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
-		],
-		"name": "LotteryEntered",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "prizeId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
-		],
-		"name": "LotteryWinner",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "previousOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "enterLottery",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "lotteryId",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "pickWinners",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "players",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "prizePool",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-]
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "player",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "lotteryId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "LotteryEntered",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "winner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "prizeId",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "lotteryId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "LotteryWinner",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "enterLottery",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "lotteryId",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "pickWinners",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "players",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "prizePool",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
 
         let web3;
         let lottery;
@@ -257,7 +262,7 @@
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 lottery = new web3.eth.Contract(abi, contractAddress);
-                
+
                 // Initialize entryFee only after web3 is loaded
                 entryFee = web3.utils.toWei("0.00001", "ether");
 
@@ -331,35 +336,47 @@
         }
 
         async function loadLotteryData() {
-    try {
-        const id = await lottery.methods.lotteryId().call();
-        const prize = await lottery.methods.prizePool().call();
-        const lastWinner = await lottery.methods.lastWinner().call();
-
-        document.getElementById('lotteryId').innerText = id;
-        document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
-        document.getElementById('lastWinner').innerText = lastWinner;
-
-        const playersList = document.getElementById('playersList');
-        playersList.innerHTML = ''; // Clear the list
-
-        let index = 0;
-        while (true) {
             try {
-                const player = await lottery.methods.players(index).call();
-                const li = document.createElement('li');
-                li.textContent = player;
-                playersList.appendChild(li);
-                index++;
-            } catch (e) {
-                break; // Exit loop when no more players
+                const id = await lottery.methods.lotteryId().call();
+                const prize = await lottery.methods.prizePool().call();
+                const lastWinnersList = document.getElementById('lastWinnersList');
+                lastWinnersList.innerHTML = ''; // Clear list
+
+                for (let i = 0; i < 3; i++) {
+                    try {
+                        const winner = await lottery.methods.lastWinners(i).call();
+                        const li = document.createElement('li');
+                        li.textContent = `Winner ${i + 1}: ${winner}`;
+                        lastWinnersList.appendChild(li);
+                    } catch (e) {
+                        break; // Exit if fewer than 3
+                    }
+                }
+
+                document.getElementById('lotteryId').innerText = id;
+                document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
+
+                const playersList = document.getElementById('playersList');
+                playersList.innerHTML = ''; // Clear the list
+
+                let index = 0;
+                while (true) {
+                    try {
+                        const player = await lottery.methods.players(index).call();
+                        const li = document.createElement('li');
+                        li.textContent = player;
+                        playersList.appendChild(li);
+                        index++;
+                    } catch (e) {
+                        break; // Exit loop when no more players
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading lottery data:", error);
             }
         }
-    } catch (error) {
-         console.error("Error loading lottery data:", error);
-        }
-    }
 
     </script>
 </body>
+
 </html>
