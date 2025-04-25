@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Game</title>
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #fceabb, #f8b500);
+            padding: 40px;
+            color: #333;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #ff8c00;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e67600;
+        }
+
+        .info {
+            margin-top: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: inline-block;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        li {
+            background: #f1f1f1;
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎉 Lucky Game 🎲</h1>
+
+    <button onclick="connectWallet()">Connect MetaMask</button>
+    <p><strong>Connected Address:</strong> <span id="connectedAddress">Not connected</span></p>
+
+    <button onclick="enterLottery()">Enter GAME</button>
+    <button id="ownerButton" class="hidden" onclick="pickWinners()">Pick Winners (Owner Only)</button>
+
+    <div class="info">
+        <p><strong>Lottery ID:</strong> <span id="lotteryId">Loading...</span></p>
+        <p><strong>Prize Pool:</strong> <span id="prizePool">Loading...</span> ETH</p>
+        <p><strong>Players:</strong></p>
+        <ul id="playersList"></ul>
+    </div>
+
+    <script>
+        const contractAddress = "0x62b13E8a0AcAFa488e27fCb9F6391D3E00c3866e"; // <-- แก้ตรงนี้
+        const abi = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "lotteryId",
+				"type": "uint256"
+			}
+		],
+		"name": "LotteryEntered",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "prizeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "lotteryId",
+				"type": "uint256"
+			}
+		],
+		"name": "LotteryWinner",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "enterLottery",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lotteryId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "pickWinners",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "players",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "prizePool",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+]; // <-- ใส่ ABI ของ Lottery Contract
+
+        let web3;
+        let lottery;
+        let currentAccount;
+
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                lottery = new web3.eth.Contract(abi, contractAddress);
+                loadLotteryData();
+            } else {
+                alert('Please install MetaMask!');
+            }
+        });
+
+        async function connectWallet() {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                currentAccount = accounts[0];
+                document.getElementById('connectedAddress').innerText = currentAccount;
+
+                const owner = await lottery.methods.owner().call();
+                if (currentAccount.toLowerCase() === owner.toLowerCase()) {
+                    document.getElementById('ownerButton').classList.remove('hidden');
+                } else {
+                    document.getElementById('ownerButton').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Connection failed:", error);
+            }
+        }
+
+        async function enterLottery() {
+            if (!currentAccount) return alert("Please connect your wallet first.");
+            const amount = prompt('Enter ETH amount to join:');
+
+            if (amount && !isNaN(amount)) {
+                await lottery.methods.enterLottery().send({
+                    from: currentAccount,
+                    value: web3.utils.toWei(amount, 'ether')
+                });
+                loadLotteryData();
+            }
+        }
+
+        async function pickWinners() {
+            if (!currentAccount) return alert("Please connect your wallet first.");
+            await lottery.methods.pickWinners().send({ from: currentAccount });
+            loadLotteryData();
+        }
+
+        async function loadLotteryData() {
+            const id = await lottery.methods.lotteryId().call();
+            const prize = await lottery.methods.prizePool().call();
+            const players = await lottery.methods.players().call();
+
+            document.getElementById('lotteryId').innerText = id;
+            document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
+
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '';
+            players.forEach(player => {
+                const li = document.createElement('li');
+                li.textContent = player;
+                playersList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
