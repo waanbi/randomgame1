@@ -78,6 +78,7 @@
     <div class="info">
         <p><strong>Lottery ID:</strong> <span id="lotteryId">Loading...</span></p>
         <p><strong>Prize Pool:</strong> <span id="prizePool">Loading...</span> ETH</p>
+        <p><strong>Last Winner:</strong> <span id="lastWinner">Not picked yet</span></p>
         <p><strong>Players:</strong></p>
         <ul id="playersList"></ul>
     </div>
@@ -330,32 +331,35 @@
         }
 
         async function loadLotteryData() {
+    try {
+        const id = await lottery.methods.lotteryId().call();
+        const prize = await lottery.methods.prizePool().call();
+        const lastWinner = await lottery.methods.lastWinner().call();
+
+        document.getElementById('lotteryId').innerText = id;
+        document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
+        document.getElementById('lastWinner').innerText = lastWinner;
+
+        const playersList = document.getElementById('playersList');
+        playersList.innerHTML = ''; // Clear the list
+
+        let index = 0;
+        while (true) {
             try {
-                const id = await lottery.methods.lotteryId().call();
-                const prize = await lottery.methods.prizePool().call();
-
-                document.getElementById('lotteryId').innerText = id;
-                document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
-
-                const playersList = document.getElementById('playersList');
-                playersList.innerHTML = ''; // Clear the list
-
-                let index = 0;
-                while (true) {
-                    try {
-                        const player = await lottery.methods.players(index).call();
-                        const li = document.createElement('li');
-                        li.textContent = player;
-                        playersList.appendChild(li);
-                        index++;
-                    } catch (e) {
-                        break; // Exit loop when no more players
-                    }
-                }
-            } catch (error) {
-                console.error("Error loading lottery data:", error);
+                const player = await lottery.methods.players(index).call();
+                const li = document.createElement('li');
+                li.textContent = player;
+                playersList.appendChild(li);
+                index++;
+            } catch (e) {
+                break; // Exit loop when no more players
             }
         }
+    } catch (error) {
+         console.error("Error loading lottery data:", error);
+        }
+    }
+
     </script>
 </body>
 </html>
