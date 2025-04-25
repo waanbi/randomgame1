@@ -83,23 +83,13 @@
     </div>
 
     <script>
-        const contractAddress = "0xBDE5a7F1dcdd523efB9320715c9426af8d0a56b6"; // <-- แก้ตรงนี้
-        const abi = [ [
+        const contractAddress = "0x6276Bb40425Ac1Bba6103126C03d8574C990c0d3"; // <-- แก้ตรงนี้
+        const abi = [ 
 	{
 		"anonymous": false,
 		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
+			{ "indexed": true, "internalType": "address", "name": "player", "type": "address" },
+			{ "indexed": false, "internalType": "uint256", "name": "lotteryId", "type": "uint256" }
 		],
 		"name": "LotteryEntered",
 		"type": "event"
@@ -107,30 +97,10 @@
 	{
 		"anonymous": false,
 		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "prizeId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
+			{ "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
+			{ "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+			{ "indexed": false, "internalType": "uint256", "name": "prizeId", "type": "uint256" },
+			{ "indexed": false, "internalType": "uint256", "name": "lotteryId", "type": "uint256" }
 		],
 		"name": "LotteryWinner",
 		"type": "event"
@@ -138,18 +108,8 @@
 	{
 		"anonymous": false,
 		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "previousOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
+			{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+			{ "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
@@ -170,11 +130,7 @@
 	},
 	{
 		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
+			{ "internalType": "address", "name": "newOwner", "type": "address" }
 		],
 		"name": "transferOwnership",
 		"outputs": [],
@@ -190,11 +146,7 @@
 		"inputs": [],
 		"name": "lotteryId",
 		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
+			{ "internalType": "uint256", "name": "", "type": "uint256" }
 		],
 		"stateMutability": "view",
 		"type": "function"
@@ -203,30 +155,18 @@
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
+			{ "internalType": "address", "name": "", "type": "address" }
 		],
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
+			{ "internalType": "uint256", "name": "", "type": "uint256" }
 		],
 		"name": "players",
 		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
+			{ "internalType": "address", "name": "", "type": "address" }
 		],
 		"stateMutability": "view",
 		"type": "function"
@@ -235,16 +175,12 @@
 		"inputs": [],
 		"name": "prizePool",
 		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
+			{ "internalType": "uint256", "name": "", "type": "uint256" }
 		],
 		"stateMutability": "view",
 		"type": "function"
 	}
-]];
+];
 
         let web3;
         let lottery;
