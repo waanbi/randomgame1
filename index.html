@@ -85,7 +85,7 @@
     </div>
 
     <script>
-        const contractAddress = "0xcDD2e08AFE9cb7ec1c55Af0336189aD923AA604f"; // Update if needed
+        const contractAddress = "0x6660d029c0b257144678871ebf4be27f60a6e3ad"; // Update if needed
         const abi = [
 	{
 		"inputs": [],
@@ -367,45 +367,46 @@
         }
 
         async function loadLotteryData() {
+    try {
+        const id = await lottery.methods.lotteryId().call();
+        const prize = await lottery.methods.prizePool().call();
+        const playersListEl = document.getElementById('playersList');
+        const winnersListEl = document.getElementById('winnersList');
+
+        document.getElementById('lotteryId').innerText = id;
+        document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
+
+        playersListEl.innerHTML = '';
+        winnersListEl.innerHTML = '';
+
+        let index = 0;
+        while (true) {
             try {
-                const id = await lottery.methods.lotteryId().call();
-                const prize = await lottery.methods.prizePool().call();
-                const playersListEl = document.getElementById('playersList');
-                const winnersListEl = document.getElementById('winnersList');
-
-                document.getElementById('lotteryId').innerText = id;
-                document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
-
-                playersListEl.innerHTML = '';
-                winnersListEl.innerHTML = '';
-
-                let index = 0;
-                while (true) {
-                    try {
-                        const player = await lottery.methods.players(index).call();
-                        const li = document.createElement('li');
-                        li.textContent = player;
-                        playersListEl.appendChild(li);
-                        index++;
-                    } catch {
-                        break;
-                    }
-                }
-
-                for (let i = 0; i < 3; i++) {
-                    try {
-                        const winner = await lottery.methods.lastWinners(i).call();
-                        const li = document.createElement('li');
-                        li.textContent = winner;
-                        winnersListEl.appendChild(li);
-                    } catch {
-                        break;
-                    }
-                }
-            } catch (err) {
-                console.error("Error loading data:", err);
+                const player = await lottery.methods.players(index).call();
+                const li = document.createElement('li');
+                li.textContent = player;
+                playersListEl.appendChild(li);
+                index++;
+            } catch {
+                break;
             }
         }
+
+        try {
+            const winner = await lottery.methods.lastWinners(0).call();
+            const li = document.createElement('li');
+            li.textContent = winner;
+            winnersListEl.appendChild(li);
+        } catch (err) {
+            const li = document.createElement('li');
+            li.textContent = 'No winner yet';
+            winnersListEl.appendChild(li);
+        }
+    } catch (err) {
+        console.error("Error loading data:", err);
+    }
+}
+
     </script>
 </body>
 </html>
