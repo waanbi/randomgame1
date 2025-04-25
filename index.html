@@ -85,177 +85,23 @@
     <script>
         const contractAddress = "0xbCD67DbDc48Be18593639369f7957526C2371598"; // Your contract address
         const abi = [
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
-		],
-		"name": "LotteryEntered",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "prizeId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
-		],
-		"name": "LotteryWinner",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "previousOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "enterLottery",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "lotteryId",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "pickWinners",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "players",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "prizePool",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-]
+            // ... (same ABI as before)
+        ]
 
         let web3;
         let lottery;
         let currentAccount;
         let owner;
-        const entryFee = web3.utils.toWei("0.00001", "ether"); // Fixed entry fee
+        let entryFee; // Define entryFee here
 
         window.addEventListener('load', async () => {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
                 lottery = new web3.eth.Contract(abi, contractAddress);
+                
+                // Initialize entryFee only after web3 is loaded
+                entryFee = web3.utils.toWei("0.00001", "ether");
+
                 await connectWallet(); // Ensures wallet is connected after initializing web3
             } else {
                 alert('Please install MetaMask!');
@@ -289,11 +135,16 @@
         async function enterLottery() {
             if (!currentAccount) return alert("Please connect your wallet first.");
 
-            await lottery.methods.enterLottery().send({
-                from: currentAccount,
-                value: entryFee
-            });
-            loadLotteryData(); // Reload the data after entering
+            try {
+                await lottery.methods.enterLottery().send({
+                    from: currentAccount,
+                    value: entryFee // Use the entryFee when entering the lottery
+                });
+                loadLotteryData(); // Reload the data after entering
+            } catch (error) {
+                console.error("Error entering the lottery:", error);
+                alert("Failed to enter the lottery.");
+            }
         }
 
         async function pickWinners() {
