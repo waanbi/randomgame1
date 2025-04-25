@@ -84,7 +84,12 @@
 
     <script>
         const contractAddress = "0x60f963640d5E978f7213e54477B104C52Eb35Ee8"; // Your contract address
-const abi = [
+        const abi = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
 	{
 		"anonymous": false,
 		"inputs": [
@@ -163,31 +168,6 @@ const abi = [
 	},
 	{
 		"inputs": [],
-		"name": "pickWinners",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [],
 		"name": "lotteryId",
 		"outputs": [
 			{
@@ -210,6 +190,13 @@ const abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "pickWinners",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -243,111 +230,123 @@ const abi = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	}
-];
+]
 
-let web3;
-let lottery;
-let currentAccount;
-let owner;
-const entryFee = web3.utils.toWei("0.00001", "ether"); // Fixed entry fee
+        let web3;
+        let lottery;
+        let currentAccount;
+        let owner;
+        const entryFee = web3.utils.toWei("0.00001", "ether"); // Fixed entry fee
 
-window.addEventListener('load', async () => {
-    if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        lottery = new web3.eth.Contract(abi, contractAddress);
-        await connectWallet();
-    } else {
-        alert('Please install MetaMask!');
-    }
-});
+        window.addEventListener('load', async () => {
+            if (window.ethereum) {
+                web3 = new Web3(window.ethereum);
+                lottery = new web3.eth.Contract(abi, contractAddress);
+                await connectWallet(); // Ensures wallet is connected after initializing web3
+            } else {
+                alert('Please install MetaMask!');
+            }
+        });
 
-async function connectWallet() {
-    try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        currentAccount = accounts[0];
-        document.getElementById('connectedAddress').innerText = currentAccount;
+        async function connectWallet() {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                currentAccount = accounts[0];
+                document.getElementById('connectedAddress').innerText = currentAccount;
 
-        // Get the owner of the contract
-        owner = await lottery.methods.owner().call();
+                // Get the owner of the contract
+                owner = await lottery.methods.owner().call();
 
-        // Check if the current account is the owner and show buttons accordingly
-        if (currentAccount.toLowerCase() === owner.toLowerCase()) {
-            document.getElementById('ownerButton').classList.remove('hidden'); // Show "Pick Winners" button for owner
-            document.getElementById('transferOwnershipButton').classList.remove('hidden'); // Show "Transfer Ownership" button
-        } else {
-            document.getElementById('ownerButton').classList.add('hidden'); // Hide for non-owners
-            document.getElementById('transferOwnershipButton').classList.add('hidden'); // Hide for non-owners
+                // Show buttons if the current account is the owner
+                if (currentAccount.toLowerCase() === owner.toLowerCase()) {
+                    document.getElementById('ownerButton').classList.remove('hidden');
+                    document.getElementById('transferOwnershipButton').classList.remove('hidden');
+                } else {
+                    document.getElementById('ownerButton').classList.add('hidden');
+                    document.getElementById('transferOwnershipButton').classList.add('hidden');
+                }
+
+                loadLotteryData(); // Load data after wallet is connected
+            } catch (error) {
+                console.error("Connection failed:", error);
+            }
         }
 
-        loadLotteryData(); // Load data after wallet is connected
-    } catch (error) {
-        console.error("Connection failed:", error);
-    }
-}
+        async function enterLottery() {
+            if (!currentAccount) return alert("Please connect your wallet first.");
 
-// Function to join the lottery with fixed entry fee
-async function enterLottery() {
-    if (!currentAccount) return alert("Please connect your wallet first.");
-
-    // Automatically send the fixed entry fee (0.00001 ETH in this case)
-    await lottery.methods.enterLottery().send({
-        from: currentAccount,
-        value: entryFee
-    });
-    loadLotteryData(); // Reload the data after entering
-}
-
-async function pickWinners() {
-    if (!currentAccount) return alert("Please connect your wallet first.");
-    await lottery.methods.pickWinners().send({ from: currentAccount });
-    loadLotteryData();
-}
-
-async function transferOwnership() {
-    const newOwner = prompt("Enter the new owner's address:");
-    if (!web3.utils.isAddress(newOwner)) {
-        return alert("Invalid address format");
-    }
-
-    if (!currentAccount) return alert("Please connect your wallet first.");
-
-    try {
-        await lottery.methods.transferOwnership(newOwner).send({ from: currentAccount });
-        alert("Ownership transferred successfully!");
-        loadLotteryData();
-    } catch (error) {
-        console.error("Error transferring ownership:", error);
-        alert("Failed to transfer ownership.");
-    }
-}
-
-async function loadLotteryData() {
-    const id = await lottery.methods.lotteryId().call();
-    const prize = await lottery.methods.prizePool().call();
-
-    document.getElementById('lotteryId').innerText = id;
-    document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
-
-    const playersList = document.getElementById('playersList');
-    playersList.innerHTML = '';
-
-    let index = 0;
-    while (true) {
-        try {
-            const player = await lottery.methods.players(index).call();
-            const li = document.createElement('li');
-            li.textContent = player;
-            playersList.appendChild(li);
-            index++;
-        } catch (e) {
-            break; // Exit loop when no more players
+            await lottery.methods.enterLottery().send({
+                from: currentAccount,
+                value: entryFee
+            });
+            loadLotteryData(); // Reload the data after entering
         }
-    }
-}
+
+        async function pickWinners() {
+            if (!currentAccount) return alert("Please connect your wallet first.");
+            await lottery.methods.pickWinners().send({ from: currentAccount });
+            loadLotteryData(); // Reload data after picking winners
+        }
+
+        async function transferOwnership() {
+            const newOwner = prompt("Enter the new owner's address:");
+            if (!web3.utils.isAddress(newOwner)) {
+                return alert("Invalid address format");
+            }
+
+            if (!currentAccount) return alert("Please connect your wallet first.");
+
+            try {
+                await lottery.methods.transferOwnership(newOwner).send({ from: currentAccount });
+                alert("Ownership transferred successfully!");
+                loadLotteryData();
+            } catch (error) {
+                console.error("Error transferring ownership:", error);
+                alert("Failed to transfer ownership.");
+            }
+        }
+
+        async function loadLotteryData() {
+            try {
+                const id = await lottery.methods.lotteryId().call();
+                const prize = await lottery.methods.prizePool().call();
+
+                document.getElementById('lotteryId').innerText = id;
+                document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
+
+                const playersList = document.getElementById('playersList');
+                playersList.innerHTML = ''; // Clear the list
+
+                let index = 0;
+                while (true) {
+                    try {
+                        const player = await lottery.methods.players(index).call();
+                        const li = document.createElement('li');
+                        li.textContent = player;
+                        playersList.appendChild(li);
+                        index++;
+                    } catch (e) {
+                        break; // Exit loop when no more players
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading lottery data:", error);
+            }
+        }
     </script>
 </body>
 </html>
-
-
-
