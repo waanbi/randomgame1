@@ -73,6 +73,7 @@
 
     <button onclick="enterLottery()">Enter GAME</button>
     <button id="ownerButton" class="hidden" onclick="pickWinners()">Pick Winners (Owner Only)</button>
+    <button id="transferOwnershipButton" class="hidden" onclick="transferOwnership()">Transfer Ownership</button>
 
     <div class="info">
         <p><strong>Lottery ID:</strong> <span id="lotteryId">Loading...</span></p>
@@ -84,11 +85,6 @@
     <script>
         const contractAddress = "0x62b13E8a0AcAFa488e27fCb9F6391D3E00c3866e"; // <-- แก้ตรงนี้
         const abi = [ [
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
 	{
 		"anonymous": false,
 		"inputs": [
@@ -140,11 +136,55 @@
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "enterLottery",
 		"outputs": [],
 		"stateMutability": "payable",
 		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "pickWinners",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
 	},
 	{
 		"inputs": [],
@@ -170,13 +210,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "pickWinners",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -211,7 +244,7 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-] ]; // <-- ใส่ ABI ของ Lottery Contract
+]];
 
         let web3;
         let lottery;
@@ -238,8 +271,10 @@
                 owner = await lottery.methods.owner().call();
                 if (currentAccount.toLowerCase() === owner.toLowerCase()) {
                     document.getElementById('ownerButton').classList.remove('hidden'); // แสดงปุ่ม Pick Winners สำหรับเจ้าของ
+                    document.getElementById('transferOwnershipButton').classList.remove('hidden'); // แสดงปุ่ม Transfer Ownership
                 } else {
                     document.getElementById('ownerButton').classList.add('hidden'); // ซ่อนปุ่มหากไม่ใช่เจ้าของ
+                    document.getElementById('transferOwnershipButton').classList.add('hidden'); // ซ่อนปุ่มหากไม่ใช่เจ้าของ
                 }
 
                 loadLotteryData(); // โหลดข้อมูลหลังเชื่อม wallet
@@ -269,6 +304,25 @@
             loadLotteryData();
         }
 
+        // ฟังก์ชันเปลี่ยนเจ้าของ
+        async function transferOwnership() {
+            const newOwner = prompt("Enter the new owner's address:");
+            if (!web3.utils.isAddress(newOwner)) {
+                return alert("Invalid address format");
+            }
+
+            if (!currentAccount) return alert("Please connect your wallet first.");
+
+            try {
+                await lottery.methods.transferOwnership(newOwner).send({ from: currentAccount });
+                alert("Ownership transferred successfully!");
+                loadLotteryData();
+            } catch (error) {
+                console.error("Error transferring ownership:", error);
+                alert("Failed to transfer ownership.");
+            }
+        }
+
         // ฟังก์ชันโหลดข้อมูลจากสมาร์ตคอนแทร็กต์
         async function loadLotteryData() {
             const id = await lottery.methods.lotteryId().call();
@@ -296,5 +350,6 @@
     </script>
 </body>
 </html>
+
 
 
