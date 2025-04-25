@@ -83,13 +83,23 @@
     </div>
 
     <script>
-        const contractAddress = "0x516d28e7AcAEf97269Adb9C4695995248e0025ba"; // <-- แก้ตรงนี้
-        const abi = [ 
+        const contractAddress = "0x60f963640d5E978f7213e54477B104C52Eb35Ee8"; // Your contract address
+const abi = [
 	{
 		"anonymous": false,
 		"inputs": [
-			{ "indexed": true, "internalType": "address", "name": "player", "type": "address" },
-			{ "indexed": false, "internalType": "uint256", "name": "lotteryId", "type": "uint256" }
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "lotteryId",
+				"type": "uint256"
+			}
 		],
 		"name": "LotteryEntered",
 		"type": "event"
@@ -97,10 +107,30 @@
 	{
 		"anonymous": false,
 		"inputs": [
-			{ "indexed": true, "internalType": "address", "name": "winner", "type": "address" },
-			{ "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
-			{ "indexed": false, "internalType": "uint256", "name": "prizeId", "type": "uint256" },
-			{ "indexed": false, "internalType": "uint256", "name": "lotteryId", "type": "uint256" }
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "prizeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "lotteryId",
+				"type": "uint256"
+			}
 		],
 		"name": "LotteryWinner",
 		"type": "event"
@@ -108,8 +138,18 @@
 	{
 		"anonymous": false,
 		"inputs": [
-			{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
-			{ "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
 		],
 		"name": "OwnershipTransferred",
 		"type": "event"
@@ -130,7 +170,11 @@
 	},
 	{
 		"inputs": [
-			{ "internalType": "address", "name": "newOwner", "type": "address" }
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
 		],
 		"name": "transferOwnership",
 		"outputs": [],
@@ -146,7 +190,11 @@
 		"inputs": [],
 		"name": "lotteryId",
 		"outputs": [
-			{ "internalType": "uint256", "name": "", "type": "uint256" }
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
 		],
 		"stateMutability": "view",
 		"type": "function"
@@ -155,18 +203,30 @@
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
-			{ "internalType": "address", "name": "", "type": "address" }
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
 		],
 		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"inputs": [
-			{ "internalType": "uint256", "name": "", "type": "uint256" }
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
 		],
 		"name": "players",
 		"outputs": [
-			{ "internalType": "address", "name": "", "type": "address" }
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
 		],
 		"stateMutability": "view",
 		"type": "function"
@@ -175,108 +235,116 @@
 		"inputs": [],
 		"name": "prizePool",
 		"outputs": [
-			{ "internalType": "uint256", "name": "", "type": "uint256" }
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
 		],
 		"stateMutability": "view",
 		"type": "function"
 	}
 ];
-        let web3;
-        let lottery;
-        let currentAccount;
-        let owner;
-        const entryFee = web3.utils.toWei("0.00001", "ether");  // Fixed entry fee (0.00001 ETH)
 
-        window.addEventListener('load', async () => {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                lottery = new web3.eth.Contract(abi, contractAddress);
-                loadLotteryData();
-            } else {
-                alert('Please install MetaMask!');
-            }
-        });
+let web3;
+let lottery;
+let currentAccount;
+let owner;
+const entryFee = web3.utils.toWei("0.00001", "ether"); // Fixed entry fee
 
-        async function connectWallet() {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                currentAccount = accounts[0];
-                document.getElementById('connectedAddress').innerText = currentAccount;
+window.addEventListener('load', async () => {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        lottery = new web3.eth.Contract(abi, contractAddress);
+        await connectWallet();
+    } else {
+        alert('Please install MetaMask!');
+    }
+});
 
-                owner = await lottery.methods.owner().call();
-                if (currentAccount.toLowerCase() === owner.toLowerCase()) {
-                    document.getElementById('ownerButton').classList.remove('hidden'); // Show "Pick Winners" button for owner
-                    document.getElementById('transferOwnershipButton').classList.remove('hidden'); // Show "Transfer Ownership" button
-                } else {
-                    document.getElementById('ownerButton').classList.add('hidden'); // Hide for non-owners
-                    document.getElementById('transferOwnershipButton').classList.add('hidden'); // Hide for non-owners
-                }
+async function connectWallet() {
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        currentAccount = accounts[0];
+        document.getElementById('connectedAddress').innerText = currentAccount;
 
-                loadLotteryData(); // Load data after wallet is connected
-            } catch (error) {
-                console.error("Connection failed:", error);
-            }
+        // Get the owner of the contract
+        owner = await lottery.methods.owner().call();
+
+        // Check if the current account is the owner and show buttons accordingly
+        if (currentAccount.toLowerCase() === owner.toLowerCase()) {
+            document.getElementById('ownerButton').classList.remove('hidden'); // Show "Pick Winners" button for owner
+            document.getElementById('transferOwnershipButton').classList.remove('hidden'); // Show "Transfer Ownership" button
+        } else {
+            document.getElementById('ownerButton').classList.add('hidden'); // Hide for non-owners
+            document.getElementById('transferOwnershipButton').classList.add('hidden'); // Hide for non-owners
         }
 
-        // Function to join the lottery with fixed entry fee
-        async function enterLottery() {
-            if (!currentAccount) return alert("Please connect your wallet first.");
+        loadLotteryData(); // Load data after wallet is connected
+    } catch (error) {
+        console.error("Connection failed:", error);
+    }
+}
 
-            // Automatically send the fixed entry fee (0.1 ETH in this case)
-            await lottery.methods.enterLottery().send({
-                from: currentAccount,
-                value: entryFee
-            });
-            loadLotteryData(); // Reload the data after entering
+// Function to join the lottery with fixed entry fee
+async function enterLottery() {
+    if (!currentAccount) return alert("Please connect your wallet first.");
+
+    // Automatically send the fixed entry fee (0.00001 ETH in this case)
+    await lottery.methods.enterLottery().send({
+        from: currentAccount,
+        value: entryFee
+    });
+    loadLotteryData(); // Reload the data after entering
+}
+
+async function pickWinners() {
+    if (!currentAccount) return alert("Please connect your wallet first.");
+    await lottery.methods.pickWinners().send({ from: currentAccount });
+    loadLotteryData();
+}
+
+async function transferOwnership() {
+    const newOwner = prompt("Enter the new owner's address:");
+    if (!web3.utils.isAddress(newOwner)) {
+        return alert("Invalid address format");
+    }
+
+    if (!currentAccount) return alert("Please connect your wallet first.");
+
+    try {
+        await lottery.methods.transferOwnership(newOwner).send({ from: currentAccount });
+        alert("Ownership transferred successfully!");
+        loadLotteryData();
+    } catch (error) {
+        console.error("Error transferring ownership:", error);
+        alert("Failed to transfer ownership.");
+    }
+}
+
+async function loadLotteryData() {
+    const id = await lottery.methods.lotteryId().call();
+    const prize = await lottery.methods.prizePool().call();
+
+    document.getElementById('lotteryId').innerText = id;
+    document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
+
+    const playersList = document.getElementById('playersList');
+    playersList.innerHTML = '';
+
+    let index = 0;
+    while (true) {
+        try {
+            const player = await lottery.methods.players(index).call();
+            const li = document.createElement('li');
+            li.textContent = player;
+            playersList.appendChild(li);
+            index++;
+        } catch (e) {
+            break; // Exit loop when no more players
         }
-
-        async function pickWinners() {
-            if (!currentAccount) return alert("Please connect your wallet first.");
-            await lottery.methods.pickWinners().send({ from: currentAccount });
-            loadLotteryData();
-        }
-
-        async function transferOwnership() {
-            const newOwner = prompt("Enter the new owner's address:");
-            if (!web3.utils.isAddress(newOwner)) {
-                return alert("Invalid address format");
-            }
-
-            if (!currentAccount) return alert("Please connect your wallet first.");
-
-            try {
-                await lottery.methods.transferOwnership(newOwner).send({ from: currentAccount });
-                alert("Ownership transferred successfully!");
-                loadLotteryData();
-            } catch (error) {
-                console.error("Error transferring ownership:", error);
-                alert("Failed to transfer ownership.");
-            }
-        }
-
-        async function loadLotteryData() {
-            const id = await lottery.methods.lotteryId().call();
-            const prize = await lottery.methods.prizePool().call();
-
-            document.getElementById('lotteryId').innerText = id;
-            document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
-
-            const playersList = document.getElementById('playersList');
-            playersList.innerHTML = '';
-
-            let index = 0;
-            while (true) {
-                try {
-                    const player = await lottery.methods.players(index).call();
-                    const li = document.createElement('li');
-                    li.textContent = player;
-                    playersList.appendChild(li);
-                    index++;
-                } catch (e) {
-                    break; // Exit loop when no more players
-                }
-            }
-        }
+    }
+}
     </script>
 </body>
 </html>
