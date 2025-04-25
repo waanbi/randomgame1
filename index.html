@@ -83,11 +83,140 @@
 
     <script>
         const contractAddress = "0x62b13E8a0AcAFa488e27fCb9F6391D3E00c3866e"; // <-- แก้ตรงนี้
-        const abi = [ /* ... (เหมือนเดิม ไม่ต้องแก้ ABI ตรงนี้) ... */ ]; // <-- ใส่ ABI ของ Lottery Contract
+        const abi = [ [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "lotteryId",
+				"type": "uint256"
+			}
+		],
+		"name": "LotteryEntered",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "winner",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "prizeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "lotteryId",
+				"type": "uint256"
+			}
+		],
+		"name": "LotteryWinner",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "enterLottery",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "lotteryId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "pickWinners",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "players",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "prizePool",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+] ]; // <-- ใส่ ABI ของ Lottery Contract
 
         let web3;
         let lottery;
         let currentAccount;
+        let owner;
 
         window.addEventListener('load', async () => {
             if (window.ethereum) {
@@ -99,17 +228,18 @@
             }
         });
 
+        // ฟังก์ชันเชื่อมต่อกระเป๋า MetaMask
         async function connectWallet() {
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 currentAccount = accounts[0];
                 document.getElementById('connectedAddress').innerText = currentAccount;
 
-                const owner = await lottery.methods.owner().call();
+                owner = await lottery.methods.owner().call();
                 if (currentAccount.toLowerCase() === owner.toLowerCase()) {
-                    document.getElementById('ownerButton').classList.remove('hidden');
+                    document.getElementById('ownerButton').classList.remove('hidden'); // แสดงปุ่ม Pick Winners สำหรับเจ้าของ
                 } else {
-                    document.getElementById('ownerButton').classList.add('hidden');
+                    document.getElementById('ownerButton').classList.add('hidden'); // ซ่อนปุ่มหากไม่ใช่เจ้าของ
                 }
 
                 loadLotteryData(); // โหลดข้อมูลหลังเชื่อม wallet
@@ -118,6 +248,7 @@
             }
         }
 
+        // ฟังก์ชันเข้าร่วมเกม
         async function enterLottery() {
             if (!currentAccount) return alert("Please connect your wallet first.");
             const amount = prompt('Enter ETH amount to join:');
@@ -131,12 +262,14 @@
             }
         }
 
+        // ฟังก์ชันสำหรับเจ้าของในการสุ่มจับรางวัล
         async function pickWinners() {
             if (!currentAccount) return alert("Please connect your wallet first.");
             await lottery.methods.pickWinners().send({ from: currentAccount });
             loadLotteryData();
         }
 
+        // ฟังก์ชันโหลดข้อมูลจากสมาร์ตคอนแทร็กต์
         async function loadLotteryData() {
             const id = await lottery.methods.lotteryId().call();
             const prize = await lottery.methods.prizePool().call();
@@ -163,4 +296,5 @@
     </script>
 </body>
 </html>
+
 
