@@ -83,135 +83,7 @@
 
     <script>
         const contractAddress = "0x62b13E8a0AcAFa488e27fCb9F6391D3E00c3866e"; // <-- แก้ตรงนี้
-        const abi = [
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "player",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
-		],
-		"name": "LotteryEntered",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "winner",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "prizeId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "lotteryId",
-				"type": "uint256"
-			}
-		],
-		"name": "LotteryWinner",
-		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "enterLottery",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "lotteryId",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "pickWinners",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "players",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "prizePool",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-]; // <-- ใส่ ABI ของ Lottery Contract
+        const abi = [ /* ... (เหมือนเดิม ไม่ต้องแก้ ABI ตรงนี้) ... */ ]; // <-- ใส่ ABI ของ Lottery Contract
 
         let web3;
         let lottery;
@@ -239,6 +111,8 @@
                 } else {
                     document.getElementById('ownerButton').classList.add('hidden');
                 }
+
+                loadLotteryData(); // โหลดข้อมูลหลังเชื่อม wallet
             } catch (error) {
                 console.error("Connection failed:", error);
             }
@@ -266,19 +140,27 @@
         async function loadLotteryData() {
             const id = await lottery.methods.lotteryId().call();
             const prize = await lottery.methods.prizePool().call();
-            const players = await lottery.methods.players().call();
 
             document.getElementById('lotteryId').innerText = id;
             document.getElementById('prizePool').innerText = web3.utils.fromWei(prize, 'ether');
 
             const playersList = document.getElementById('playersList');
             playersList.innerHTML = '';
-            players.forEach(player => {
-                const li = document.createElement('li');
-                li.textContent = player;
-                playersList.appendChild(li);
-            });
+
+            let index = 0;
+            while (true) {
+                try {
+                    const player = await lottery.methods.players(index).call();
+                    const li = document.createElement('li');
+                    li.textContent = player;
+                    playersList.appendChild(li);
+                    index++;
+                } catch (e) {
+                    break; // ออก loop เมื่อไม่มี player เพิ่มแล้ว
+                }
+            }
         }
     </script>
 </body>
 </html>
+
