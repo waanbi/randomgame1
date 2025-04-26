@@ -76,3 +76,19 @@ randomgame1/ ├── 🖼 65061447.png ├── 📄 Aboutme.html ├── �
 
 - ใช้งานบนเครือข่ายที่เหมาะสม เช่น Testnet (holeskytestnet)
 - ตรวจสอบ Gas Fee ก่อนทำธุรกรรมทุกครั้ง
+
+## 👨‍💻 ผู้พัฒนา
+![โปรไฟล์ของฉัน](./wan.jpg)
+
+- ชื่อ: 65039678 นคเรศ โพธิรัตน์
+- Email: nakares.po@spumail.net
+
+![โปรไฟล์ของฉัน](./JIWSPUNO.1.jpg)
+
+- ชื่อ: 65042386 ธีภพ เพ็ชรเปี่ยม
+- Email:thipop.pi@spumail.net
+
+![โปรไฟล์ของฉัน](./65061447.jpg)
+
+- ชื่อ: 65061447 สมิทธ์ ทีปรัตนะ
+- Email: smith.dip@spumail.net
