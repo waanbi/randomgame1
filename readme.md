@@ -64,4 +64,16 @@
   - `OwnershipTransferred`
 
 ## 📁 โครงสร้างไฟล์
+randomgame1/ ├── 🖼 65061447.png ├── 📄 Aboutme.html ├── 📄 index.html ├── 🖼 JIWSPUNO.1.jpg ├── 📝 readme.md └── 🖼 wan.jpg
+## ⚡ เทคโนโลยีที่ใช้
 
+- HTML5 + CSS3
+- JavaScript (Vanilla)
+- Web3.js (ผ่าน CDN)
+- MetaMask (Wallet Connection)
+
+## 📝 หมายเหตุ
+
+- อย่าลืมอัปเดต `contractAddress` ในโค้ด ถ้าคุณนำสัญญาไป Deploy ใหม่
+- ใช้งานบนเครือข่ายที่เหมาะสม เช่น Testnet (Sepolia, Mumbai ฯลฯ) ก่อนขึ้น Mainnet จริง
+- ตรวจสอบ Gas Fee ก่อนทำธุรกรรมทุกครั้ง
