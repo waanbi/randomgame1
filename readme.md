@@ -63,8 +63,13 @@
   - `LotteryWinner`
   - `OwnershipTransferred`
 
-## 📁 โครงสร้างไฟล์
-randomgame1/ ├── 🖼 65061447.png ├── 📄 Aboutme.html ├── 📄 index.html ├── 🖼 JIWSPUNO.1.jpg ├── 📝 readme.md └── 🖼 wan.jpg
+## 🖼 ตัวอย่างหน้าจอแอป
+
+### หน้าแรก
+![หน้าแรก](./index1.png)
+
+### หน้า About Us
+![หน้า About Us](./aboutus.jpg)
 ## ⚡ เทคโนโลยีที่ใช้
 
 - HTML5 + CSS3
