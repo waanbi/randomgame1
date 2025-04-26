@@ -69,7 +69,7 @@
 ![หน้าแรก](./index1.png)
 
 ### หน้า About Us
-![หน้า About Us](./aboutus.jpg)
+![หน้า About Us](./aboutus.png)
 ## ⚡ เทคโนโลยีที่ใช้
 
 - HTML5 + CSS3
