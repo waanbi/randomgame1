@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to right, #fceabb, #f8b500);
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
             padding: 40px;
             color: #333;
             text-align: center;
@@ -69,12 +69,8 @@
     <h1>🎉 Lucky Game 🎲</h1>
 
     <button onclick="connectWallet()">Connect MetaMask</button>
-    <p><strong>Connected Address:</strong> <span id="connectedAddress">Not connected</span></p>
-
-    <button onclick="enterLottery()">Enter GAME</button>
 	<button onclick="window.location.href='Aboutme.html'">About us</button>
-    <button id="ownerButton" class="hidden" onclick="pickWinners()">Pick Winners</button>
-    <button id="transferOwnershipButton" class="hidden" onclick="transferOwnership()">Transfer Ownership</button>
+    <p><strong>Connected Address:</strong> <span id="connectedAddress">Not connected</span></p>
 
     <div class="info">
         <p><strong>Lottery ID:</strong> <span id="lotteryId">Loading...</span></p>
@@ -84,7 +80,11 @@
         <p><strong>Players:</strong></p>
         <ul id="playersList"></ul>
     </div>
-
+	<div>
+	<button onclick="enterLottery()">Enter GAME</button>
+	<button id="ownerButton" class="hidden" onclick="pickWinners()">Pick Winners</button>
+    <button id="transferOwnershipButton" class="hidden" onclick="transferOwnership()">Transfer Ownership</button>
+	</div>
     <script>
         const contractAddress = "0xbaD9a176ae2bc379F3b9c91cf0F395B6e33ffd97"; // Update if needed
         const abi = [
