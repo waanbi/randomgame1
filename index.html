@@ -342,16 +342,22 @@
             }
         }
 
-        async function pickWinners() {
-            if (!currentAccount) return alert("Please connect your wallet first.");
-            try {
-                await lottery.methods.pickWinners().send({ from: currentAccount });
-                loadLotteryData();
-            } catch (err) {
-                console.error("Pick winner failed:", err);
-                alert("Failed to pick winners.");
-            }
+		async function pickWinners() {
+    if (!currentAccount) return alert("Please connect your wallet first.");
+    try {
+        console.log("Sending pickWinners from:", currentAccount);
+        await lottery.methods.pickWinners().send({ from: currentAccount, gas: 300000 });
+        loadLotteryData();
+    } catch (err) {
+        if (err.code === 4001) {
+            alert("Transaction rejected by user.");
+        } else {
+            console.error("Pick winner failed:", err.message || err);
+            alert("Failed to pick winners: " + (err.message || "Unknown error"));
         }
+    }
+}
+
 
         async function transferOwnership() {
             const newOwner = prompt("Enter the new owner's address:");
