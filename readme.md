@@ -74,6 +74,5 @@ randomgame1/ ├── 🖼 65061447.png ├── 📄 Aboutme.html ├── �
 
 ## 📝 หมายเหตุ
 
-- อย่าลืมอัปเดต `contractAddress` ในโค้ด ถ้าคุณนำสัญญาไป Deploy ใหม่
-- ใช้งานบนเครือข่ายที่เหมาะสม เช่น Testnet (Sepolia, Mumbai ฯลฯ) ก่อนขึ้น Mainnet จริง
+- ใช้งานบนเครือข่ายที่เหมาะสม เช่น Testnet (holeskytestnet)
 - ตรวจสอบ Gas Fee ก่อนทำธุรกรรมทุกครั้ง
