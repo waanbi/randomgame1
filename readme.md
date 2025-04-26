@@ -1,78 +1,67 @@
-🎲 Lucky Game - Decentralized Lottery DApp
-Welcome to Lucky Game — a simple decentralized lottery game built with Ethereum Smart Contracts, Web3.js, and a modern HTML/CSS frontend.
-Users can connect their MetaMask wallet, enter the lottery, and (if they're lucky) win the prize pool! 🎉
+# 🎲 Lucky Game
 
-🚀 Features
-Connect wallet (MetaMask)
+เว็บเกมลอตเตอรี่ที่ให้คุณสามารถเชื่อมต่อกระเป๋า MetaMask เพื่อเข้าร่วมเล่นเกมเสี่ยงโชค และผู้ดูแลระบบสามารถเลือกผู้ชนะ หรือโอนสิทธิ์เจ้าของสัญญาได้
 
-Enter the lottery with a small ETH payment
+## 🔗 คุณสมบัติ
 
-Display current lottery ID and prize pool
+- เชื่อมต่อกระเป๋า MetaMask
+- แสดงข้อมูลรางวัลรวม (Prize Pool)
+- แสดงผู้เล่นที่เข้าร่วม (Players)
+- แสดงผู้ชนะล่าสุด (Last Winners)
+- ฟังก์ชันสำหรับเจ้าของสัญญา:
+  - เลือกผู้ชนะ (Pick Winners)
+  - โอนสิทธิ์เจ้าของสัญญา (Transfer Ownership)
 
-Show list of players and last winners
+## 🛠 วิธีการใช้งาน
 
-Owner-only controls:
+### 1. ติดตั้ง MetaMask
 
-Pick winners
+หากยังไม่มี ให้ติดตั้ง MetaMask จาก [https://metamask.io/](https://metamask.io/)
 
-Transfer contract ownership
+### 2. เปิดไฟล์ HTML นี้ใน Browser
 
-📦 Tech Stack
-Smart Contract: Solidity (Ethereum)
+เช่น Chrome, Brave ที่รองรับ Web3
 
-Frontend: HTML5, CSS3 (with modern UI), JavaScript (Web3.js)
+เปิดไฟล์ `index.html` หรือไฟล์ frontend ที่ให้ไว้ ผ่าน Browser
 
-Blockchain Interaction: web3.js
+### 3. เชื่อมต่อกระเป๋า
 
-⚙️ How to Run
-Clone the project
+- กดปุ่ม **"Connect MetaMask"**
+- อนุญาตการเชื่อมต่อกระเป๋า
 
-bash
-คัดลอก
-แก้ไข
-git clone https://github.com/your-username/lucky-game.git
-cd lucky-game
-Open index.html
-You can simply open it in your browser. (No server needed unless you want one.)
+### 4. เข้าร่วมเกม
 
-Connect MetaMask
+- กดปุ่ม **"Enter GAME"**
+- จะมีการส่ง ETH จำนวนเล็กน้อย (ค่าเข้าเกม)
 
-Install MetaMask if you don't have it: MetaMask Download
+### 5. ฟังก์ชันเพิ่มเติมสำหรับเจ้าของสัญญา
 
-Connect your wallet when prompted.
+หากคุณเป็นเจ้าของสัญญา จะมีปุ่ม:
 
-Start playing!
+- **"Pick Winners"** เพื่อเลือกผู้ชนะ
+- **"Transfer Ownership"** เพื่อเปลี่ยนเจ้าของสัญญา
 
-Enter the game by paying the entry fee (default 0.00001 ETH).
+## 🧩 ข้อมูล Smart Contract
 
-If you are the contract owner, you can pick winners and transfer ownership.
+- **ที่อยู่สัญญา (Contract Address):**  
+  `0xbaD9a176ae2bc379F3b9c91cf0F395B6e33ffd97`
 
-📝 Smart Contract Details
-Contract Address: 0xbaD9a176ae2bc379F3b9c91cf0F395B6e33ffd97
+- **Entry Fee:**  
+  `0.00001 ETH`
 
-Main Functions:
+- **ฟังก์ชันหลัก:**
+  - `enterLottery()` - เข้าร่วมลอตเตอรี่ (payable)
+  - `pickWinners()` - เลือกผู้ชนะ
+  - `transferOwnership(newOwner)` - โอนเจ้าของสัญญา
+  - `lotteryId()` - หมายเลขเกมปัจจุบัน
+  - `prizePool()` - จำนวนเงินรางวัลรวม
+  - `getPlayers()` - รายชื่อผู้เล่น
+  - `getLastWinners()` - รายชื่อผู้ชนะก่อนหน้า
 
-enterLottery(): Pay and join the lottery.
+- **Event:**
+  - `LotteryEntered`
+  - `LotteryWinner`
+  - `OwnershipTransferred`
 
-pickWinners(): (Owner only) Randomly pick a winner.
+## 📁 โครงสร้างไฟล์
 
-transferOwnership(newOwner): (Owner only) Transfer ownership to another address.
-
-View methods: getPlayers(), getLastWinners(), prizePool(), etc.
-
-📸 Screenshots
-
-Home Page	Connected Wallet	Admin Controls
-You can create a /screenshots folder and put images there if you want to include this.
-
-⚠️ Notes
-Make sure you're connected to the correct Ethereum network where the contract is deployed (e.g., Goerli, Sepolia, or your private network).
-
-Entry fee is currently set at 0.00001 ETH.
-
-Make sure you have enough ETH for gas fees when interacting.
-
-📄 License
-MIT License — feel free to use, modify, and share!
-
-✨ Good Luck & Have Fun!
